@@ -26,17 +26,14 @@ if True:
 class Config:
 
     # 配置 package_name, adb_location, mail_host, mail_user, mail_pass
-    package_name = "com.testerhome.nativeandroid"
-    adb_location = '/Users/smzdm/Documents/01_Android/adt-bundle-mac-x86_64-20140702/sdk/platform-tools/adb'
-    mail_host = "smtp.163.com"  # 设置邮箱服务器
-    mail_user = "xxxxxx@smzdm.com"  # 邮箱用户名
-    mail_pass = "xxxxxx"  # 邮箱密码
-    mail_to_list = ['xxxxxx@163.com'] # 发送给收件人
+    package_name = ""
+    adb_location = ''
+    adb = 'adb'
+    mail_host = ""  # 设置邮箱服务器
+    mail_user = ""  # 邮箱用户名
+    mail_pass = ""  # 邮箱密码
+    mail_to_list = [] # 发送给收件人
 
-    if platform.system() == 'Darwin':
-        adb = adb_location
-    elif platform.system() == 'Windows':
-        adb = 'adb'
     device_dict = {}
     thread_instances = []
     thread_instances_monkey = []
