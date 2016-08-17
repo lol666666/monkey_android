@@ -1,16 +1,19 @@
-# Auto Monkey For Android
+# Auto Monkey For Android #
 
-###功能简介
+### 版本 1.0
+
+### 功能简介 ###
 1. 完全自动：只需要负责连接设备
 2. 支持多个设备
 3. 支持随时断开设备、插入新设备，每5s定时检测设备自动运行
 4. 崩溃后，发送邮件，邮件内容：执行时长、crash log
+5. 支持Windows、Mac系统
 
-###系统及环境、依赖
-1. 测试环境：Mac OS、Python 2.7.10
+### 系统及环境、依赖 ###
+1. 测试环境：Mac OS、Windows 10、Python 2.7.10
 2. 配置 **adb**
 
-###配置修改
+### 配置修改 ###
 /your_location/monkey_android/performance/config/config.py
 
 ```python
@@ -24,7 +27,7 @@ class Config:
     mail_to_list = ['xxxxx@163.com'] # 发送给收件人
 ```
 
-###运行
+### 运行 ###
 
 1. 执行命令 `
     ```shell
@@ -32,7 +35,7 @@ class Config:
     ```
 2. 连接手机
 
-###关闭monkey
+### 关闭monkey ###
 
 1. 停掉monkey_server或当前电脑没有正在运行的 monkey_server
 2. 运行monkey_stop
@@ -41,11 +44,12 @@ class Config:
     python /your_location/monkey_android/performance/monkey/monkey_stop.py`
     ```
 3. 或连接一台没有monkey_server 的电脑，执行重启手机
+
     ```shell
-    adb shell reboot
+    adb reboot
     ```
     
 
 
-###邮件截图
+### 邮件截图 ###
 <img alt="summary" src="https://github.com/wangyunshuai/monkey_android/blob/master/performance/img/mail.png">

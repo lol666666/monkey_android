@@ -2,11 +2,14 @@
 # coding: utf-8
 
 import time
-import commands,subprocess
+import commands
 import os
 import sys
 import logging
 import threading
+import platform
+import subprocess
+import traceback
 
 if __name__ == '__main__':
     project_dir = os.path.split(os.getcwd())
@@ -16,7 +19,6 @@ if __name__ == '__main__':
 
 from performance.config.config import Config
 from performance.libs.mail import SendMail
-import performance.libs.base as base
 from performance.monkey.monkey_stop import stop_monkey
 
 wkdir = os.getcwd()
@@ -41,10 +43,8 @@ def main(device_id, device_model):
             mail = SendMail()
             mail.send_mail(Config.mail_to_list, mail_content)
             reboot_device(device_id, device_model)
-    except Exception as e:
-        logging.error(e)
-        time.sleep(3)
-    time.sleep(3)
+    except Exception:
+        traceback.print_exc()
 
 
 def get_apk_name():
@@ -105,10 +105,11 @@ def start_monkey(adb, device_id, device_model, monkey_seed, package_name):
     cmd_monkey = "%s -s %s shell monkey -s %s -p %s --throttle 300 --pct-syskeys 0 --pct-nav 0 --pct-trackball 0 --pct-anyevent 0 -v 400000000 > %s.txt" % (
         adb, device_id, monkey_seed, package_name, log_file_name_with_location)
     # cmd_monkey = "%s -s %s shell monkey -s %s -p %s --pct-touch 10 --pct-motion 10 --pct-appswitch 80 -v 400000000 > %s.txt" %(adb, device_id, monkey_seed, package_name, log_file_name_with_location)
-    logging.info(cmd_monkey)
-    if base.is_mac():
+    if platform.system() == "Darwin":
+        logging.info("Monkey cmd: %s" % cmd_monkey)
         status, output = commands.getstatusoutput(cmd_monkey)
-    elif base.is_win():
+    elif platform.system() == "Windows":
+        logging.info("Monkey cmd: %s" % cmd_monkey)
         output = subprocess.check_output(cmd_monkey, shell=True)
     logging.info("monkey end with %s" % device_model)
     monkey_end_time = time.time()
@@ -119,17 +120,11 @@ def start_monkey(adb, device_id, device_model, monkey_seed, package_name):
 def capture_screen(device_id, log_file_name, log_file_name_with_location, monkey_duration):
     logging.info("capture screen")
     cmd_capture = "%s -s %s shell screencap -p /sdcard/%s.png" % (adb, device_id, log_file_name)
-    if base.is_mac():
-        status, output = commands.getstatusoutput(cmd_capture)
-    elif base.is_win():
-        output = subprocess.check_output(cmd_monkey, shell=True)
+    status, output = commands.getstatusoutput(cmd_capture)
     if output == "":
         cmd_pull_screenshot = "%s -s %s pull /sdcard/%s.png %s.png" % (
             adb, device_id, log_file_name, log_file_name_with_location)
-        if base.is_mac():
-            status, output = commands.getstatusoutput(cmd_pull_screenshot)
-        elif base.is_win():
-            output = subprocess.check_output(cmd_pull_screenshot, shell=True)
+        status, output = commands.getstatusoutput(cmd_pull_screenshot)
         logging.info(output)
     # rename log file
     if output == "":
@@ -157,7 +152,7 @@ def deal_with_log(log_file_name_with_location, monkey_duration):
                 f_crash_log.writelines(full_log[j])
                 f_crash_log.close()
             break
-    if mail_content == "":
+    if mail_content == "aaa":
         return mail_content
     else:
         # rename log file
@@ -171,18 +166,11 @@ def deal_with_log(log_file_name_with_location, monkey_duration):
 
 
 def reboot_device(device_id, device_model):
-    cmd = "adb + ' -s ' + device_id + ' reboot'"
-    if base.is_mac():
-        status, output = commands.getstatusoutput(cmd)
-    elif base.is_win():
-        output = subprocess.check_output(cmd, shell=True)
-    if output == "":
-        logging.info("reboot device, please wait 60s")
-        count_time = 0
-        for i in xrange(60):
-            time.sleep(1)
-            count_time += 1
-            logging.info(device_model + ": " + count_time)
+    if platform.system() == "Darwin":
+        logging.info("Reboot %s" % device_model)
+        status, output = commands.getstatusoutput(adb + ' -s ' + device_id + ' reboot')
+    elif platform.system() == "Windows":
+        subprocess.check_output("%s -s %s reboot" % (adb, device_id), shell=True)
 
 
 class MonkeyThread(threading.Thread):
@@ -193,17 +181,8 @@ class MonkeyThread(threading.Thread):
         self.device_model = device_model
 
     def run(self):
-        while self.thread_stop is False:
-            if self.device_model in Config.device_dict:
-                main(self.device_id, self.device_model)
-                time.sleep(7)
-            else:
-                self.thread_stop = True
-
-    def stop(self):
-        self.thread_stop = True
-        stop_monkey(self.device_id, self.device_model)
-
+        time.sleep(60)
+        main(self.device_id, self.device_model)
 
 def create_threads_monkey(device_dict):
     thread_instances = []
