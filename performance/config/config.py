@@ -10,7 +10,7 @@ import random
 project_name = "performance"
 wkdir = os.getcwd()
 logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s %(filename)s %(levelname)s [line:%(lineno)d] %(message)s',
+                    format='%(asctime)s %(levelname)s | %(message)s--[%(filename)-5s:%(lineno)d]',
                     datefmt='%y%m%d %H:%M:%S',
                     filename='%s%s%s%slog%s%s.log' % (
                         wkdir, os.sep, project_name, os.sep, os.sep, time.strftime("%Y%m%d %H-%M-%S")),
@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG,
 if True:
     console = logging.StreamHandler()
     console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s %(levelname)s | %(message)s    --[%(filename)-5s:%(lineno)d]')
+    formatter = logging.Formatter('%(asctime)s %(levelname)s | %(message)s--[%(filename)-5s:%(lineno)d]')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
 
@@ -47,6 +47,7 @@ class Config:
     str_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     data_num = 1000
     monkey_seed = str(random.randrange(1, 1000))
+    monkey_parameters = "--throttle 300 --pct-syskeys 0 --pct-nav 0 --pct-trackball 0 --pct-anyevent 0"
 
     def __init__(self):
         pass
