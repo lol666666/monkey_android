@@ -7,6 +7,7 @@ import sys
 import re
 import logging
 
+
 if __name__ == '__main__':
     project_dir = os.path.split(os.getcwd())
     project_dir = os.path.split(project_dir[0])
@@ -44,10 +45,10 @@ def get_device_info():
             device_id_list.append(device_id)
         # logging.info(device_id_list)
     elif is_win():
-        os.system('adb devices > devices.txt')
+        get_device_id_cmd = '%s devices > devices.txt' % adb;
+        os.system(get_device_id_cmd)
         fp = open('devices.txt')
         lines = fp.readlines()
-        dviceUdid = []
         fp.close()
         for el in lines[1:-1]:
             list = re.split('\\t',el)

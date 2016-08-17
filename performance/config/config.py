@@ -7,6 +7,9 @@ import logging
 import platform
 import random
 
+
+ANDROID_HOME = 'ANDROID_HOME'
+
 project_name = "performance"
 wkdir = os.getcwd()
 logging.basicConfig(level=logging.DEBUG,
@@ -21,6 +24,14 @@ if True:
     formatter = logging.Formatter('%(asctime)s %(levelname)s | %(message)s    --[%(filename)-5s:%(lineno)d]')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+
+def check_env():
+    android_home = os.getenv(ANDROID_HOME)
+    logging.info('android home is %s' % android_home)
+
+    if not android_home:
+        raise ValueError('ANDROID_HOME not found')
+    return android_home
 
 
 class Config:
@@ -51,6 +62,8 @@ class Config:
     def __init__(self):
         pass
 
+adb_home = check_env()
+Config.adb = os.path.join(adb_home , 'platform-tools', 'adb')
 
 if __name__ == '__main__':
 
